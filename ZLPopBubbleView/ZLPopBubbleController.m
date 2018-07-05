@@ -7,7 +7,8 @@
 //
 
 #import "ZLPopBubbleController.h"
-#import "ZLPopBubbleView.h"
+#import "ZLPopover.h"
+#import "UIView+ZLExtension.h"
 
 
 #define ZLPopBubbleScreenBounds [UIScreen mainScreen].bounds
@@ -26,7 +27,7 @@ static CGFloat ZLPopBubbleViewAnimTimeinterval = 0.3f;
 /* effectView */
 @property (strong, nonatomic) UIVisualEffectView *effectView;
 /* popBubbleView */
-@property (strong, nonatomic) ZLPopBubbleView *popBubbleView;
+@property (strong, nonatomic) ZLPopover *popoverView;
 /* 显示时候的frame */
 @property (assign, nonatomic) CGRect showFrame;
 /* 缩小时的frame */
@@ -59,11 +60,11 @@ static CGFloat ZLPopBubbleViewAnimTimeinterval = 0.3f;
     return _effectView;
 }
 
-- (ZLPopBubbleView *)popBubbleView {
-    if (!_popBubbleView) {
-        _popBubbleView = [[ZLPopBubbleView alloc] initWithFrame:self.showFrame];
+- (ZLPopoverView *)popoverView {
+    if (!_popoverView) {
+        _popoverView = [[ZLPopoverView alloc] initWithFrame:self.showFrame];
     }
-    return _popBubbleView;
+    return _popoverView;
 }
 #pragma mark - set up view
 - (void)viewDidLoad {
@@ -77,16 +78,16 @@ static CGFloat ZLPopBubbleViewAnimTimeinterval = 0.3f;
     self.view.backgroundColor = [UIColor clearColor];
     
     [self.view addSubview:self.effectView];
-    [self.view addSubview:self.popBubbleView];
+    [self.view addSubview:self.popoverView];
 }
 
 - (void)p_zl_animShowPopBubbleViewCompletion:(void(^)(void))completion {
     WeakSelf;
-    self.popBubbleView.alpha = 0;
-    self.popBubbleView.contentView.zl_height = 0;
+    self.popoverView.alpha = 0;
+    self.popoverView.contentView.zl_height = 0;
     [UIView animateWithDuration:ZLPopBubbleViewAnimTimeinterval delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
-        weakSelf.popBubbleView.contentView.zl_height = self.showFrame.size.height - 10.f;
-        weakSelf.popBubbleView.alpha = 1.f;
+        weakSelf.popoverView.contentView.zl_height = self.showFrame.size.height - 10.f;
+        weakSelf.popoverView.alpha = 1.f;
         weakSelf.effectView.alpha = ZLPopBubbleEffectViewAlpha;
     } completion:^(BOOL finished) {
         if (completion) {
@@ -98,7 +99,7 @@ static CGFloat ZLPopBubbleViewAnimTimeinterval = 0.3f;
 - (void)p_zl_animHidePopBubbleViewCompletion:(void(^)(void))completion  {
     WeakSelf;
     [UIView animateWithDuration:ZLPopBubbleViewAnimTimeinterval delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
-        weakSelf.popBubbleView.contentView.zl_height = 0;
+        weakSelf.popoverView.contentView.zl_height = 0;
         weakSelf.effectView.alpha = 0;
     } completion:^(BOOL finished) {
         [weakSelf p_zl_clickView];

@@ -1,114 +1,86 @@
 //
-//  ZLPopBubbleView.m
-//  TYWJBus
+//  ZLPopoverView.m
+//  YunDuoYouBao
 //
-//  Created by Harley He on 2018/6/20.
-//  Copyright © 2018 Harley He. All rights reserved.
+//  Created by Harley He on 18/11/2017.
+//  Copyright © 2017 Harley He. All rights reserved.
 //
 
 #import "ZLPopBubbleView.h"
+#import "ZLPopBubbleController.h"
 
-static CGFloat ZLPopBubbleViewRectangleY = 10.f;
-static CGFloat ZLPopBubbleViewArcW = 6.f;
-static CGFloat ZLPopBubbleViewArcRadius = 6.f;
+#define WeakSelf  __weak typeof(self) weakSelf = self
 
+static UIWindow *window_ = nil;
+static ZLPopBubbleView *_instance = nil;
+
+@interface ZLPopBubbleView()<NSCopying>
+
+/* popSelectBlock */
+@property (copy, nonatomic) void(^confirmClickedModel)(id model);
+
+@end
 
 @implementation ZLPopBubbleView
 
-
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect {
-    // Drawing code
-    [super drawRect:rect];
-    
-    if (!self.viewColor) {
-        self.viewColor = [UIColor whiteColor];
-    }
-    [self drawTriangle];
-//    [self drawRectangle];
-//    [self setShowingViewF];
+#pragma mark - 单例
++ (instancetype)sharedInstance {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _instance = [[ZLPopoverView alloc] init];
+    });
+    return _instance;
 }
 
-- (void)drawTriangle {
-    
-    if (self.direction == ZLPopBubbleViewDirectionBottom) {
-        CGFloat x = self.arrowPointX - self.frame.origin.x;
-        
-        UIBezierPath *bezierPath = [UIBezierPath bezierPath];
-        [bezierPath moveToPoint:CGPointMake(x, 0)];
-        [bezierPath addLineToPoint:CGPointMake(x - ZLPopBubbleViewArcW, ZLPopBubbleViewRectangleY)];
-        [bezierPath addLineToPoint:CGPointMake(x + ZLPopBubbleViewArcW, ZLPopBubbleViewRectangleY)];
-        
-        [self.viewColor set];
-        [bezierPath fill];
-    }else {
-        CGFloat x = self.arrowPointX - self.frame.origin.x;
-        
-        UIBezierPath *bezierPath = [UIBezierPath bezierPath];
-        [bezierPath moveToPoint:CGPointMake(x, self.frame.size.height)];
-        [bezierPath addLineToPoint:CGPointMake(x - ZLPopBubbleViewArcW, ZLPopBubbleViewRectangleY)];
-        [bezierPath addLineToPoint:CGPointMake(x + ZLPopBubbleViewArcW, ZLPopBubbleViewRectangleY)];
-        
-        [self.viewColor set];
-        [bezierPath fill];
-    }
++ (instancetype)allocWithZone:(struct _NSZone *)zone {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _instance = [super allocWithZone:zone];
+    });
+    return _instance;
 }
 
-- (void)drawRectangle {
-    if (self.direction == ZLPopBubbleViewDirectionBottom) {
-        UIBezierPath *bezierPath = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(0, ZLPopBubbleViewRectangleY, self.zl_width, self.zl_height - ZLPopBubbleViewRectangleY) cornerRadius:ZLPopBubbleViewArcRadius];
-        
-        [self.viewColor set];
-        [bezierPath fill];
-    }else {
-        UIBezierPath *bezierPath = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(0, 0, self.zl_width, self.zl_height - ZLPopBubbleViewRectangleY) cornerRadius:ZLPopBubbleViewArcRadius];
-        
-        [self.viewColor set];
-        [bezierPath fill];
-    }
+- (id)copyWithZone:(NSZone *)zone {
+    return _instance;
+}
+
+#pragma mark - 各方法
+
+- (void)show {
+    window_ = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    window_.windowLevel = UIWindowLevelNormal;
+    window_.backgroundColor = [UIColor clearColor];
+    window_.hidden = NO;
+    
+    UIButton *coverBtn = [[UIButton alloc] initWithFrame:window_.bounds];
+    coverBtn.backgroundColor = [UIColor clearColor];
+    [coverBtn addTarget:self action:@selector(tapWindow:) forControlEvents:UIControlEventTouchUpInside];
+    [window_ addSubview:coverBtn];
+}
+- (void)tapWindow:(UIButton *)btn {
+    [self hide];
+}
+- (void)hide {
+    window_.rootViewController = nil;
+    window_.hidden = YES;
+    window_ = nil;
     
 }
 
-- (void)addContentView {
-    UIView *contentView = [[UIView alloc] init];
+#pragma mark - 显示popBubbleView
+- (void)showPopBubbleViewWithView:(UIView *)view showingView:(UIView *)showingView showingViewH:(CGFloat)showingViewH {
+    [self show];
     
-    if (self.direction == ZLPopBubbleViewDirectionBottom) {
-        contentView.frame = CGRectMake(0, ZLPopBubbleViewRectangleY - 1, self.zl_width, self.zl_height - ZLPopBubbleViewRectangleY);
-    }else {
-        contentView.frame = CGRectMake(0, 0, self.zl_width, self.zl_height - ZLPopBubbleViewRectangleY);
-    }
-    contentView.backgroundColor = self.viewColor;
-    [contentView setRoundViewWithCornerRaidus:ZLPopBubbleViewArcRadius];
-    [self addSubview:contentView];
-    self.contentView = contentView;
-    [self setShowingViewF];
-    
-    [_showingView setRoundViewWithCornerRaidus:ZLPopBubbleViewArcRadius];
-    [contentView addSubview:_showingView];
+    WeakSelf;
+    ZLPopBubbleController *popBubbleVc = [ZLPopBubbleController popBubbleWithView:view showingView:showingView showingViewH:showingViewH];
+    window_.rootViewController = popBubbleVc;
+    popBubbleVc.viewClicked = ^{
+        [weakSelf hide];
+    };
 }
 
-- (instancetype)initWithFrame:(CGRect)frame {
-    if (self = [super initWithFrame:frame]) {
-        self.backgroundColor = [UIColor clearColor];
-    }
-    return self;
+- (void)showPopBubbleViewWithView:(UIView *)view showingView:(UIView *)showingView {
+    [self showPopBubbleViewWithView:view showingView:showingView showingViewH:0];
 }
 
-- (void)setShowingView:(UIView *)showingView {
-    _showingView = showingView;
-    
-    [self addContentView];
-}
-
-- (void)setShowingViewF {
-    _showingView.zl_width = self.contentView.zl_width - 2.f;
-    _showingView.zl_height = self.contentView.zl_height - 2.f;
-    _showingView.zl_y = 1.f;
-    _showingView.zl_x = 1.f;
-}
-
-- (void)dealloc {
-    ZLFuncLog;
-}
 @end

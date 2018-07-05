@@ -1,9 +1,8 @@
 //
 //  UIView+ZLExtension.m
-//  ITianCai
 //
-//  Created by hezhonglin on 16/8/12.
-//  Copyright © 2016年 zeb. All rights reserved.
+//  Created by Harley He on 16/8/12.
+//  Copyright © 2016年 Harley He. All rights reserved.
 //
 
 #import "UIView+ZLExtension.h"
