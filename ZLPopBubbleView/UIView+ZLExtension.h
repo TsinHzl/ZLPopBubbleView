@@ -24,12 +24,4 @@
 @property(nonatomic, assign)CGFloat zl_bottmLine;
 
 - (void)setRoundViewWithCornerRaidus:(CGFloat)cornerRadius;
-- (void)setRoundView;
-
-- (void)setBorderWithColor:(UIColor *)color;
-/**
- *  @判断view是否显示
- */
-- (BOOL)isShowingOnKeyWindow;
-
 @end

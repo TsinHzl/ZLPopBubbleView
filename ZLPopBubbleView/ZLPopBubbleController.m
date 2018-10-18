@@ -15,11 +15,11 @@
 #define ZLPopBubbleScreenWidth [UIScreen mainScreen].bounds.size.width
 #define ZLPopBubbleScreenHeight [UIScreen mainScreen].bounds.size.height
 
-static CGFloat ZLPopBubbleEffectViewAlpha = 0.65f;
-static CGFloat ZLPopBubbleViewW = 130.f;
-static CGFloat ZLPopBubbleViewH = 220.f;
-static CGFloat ZLPopBubbleViewMargin = 10.f;
-static CGFloat ZLPopBubbleViewAnimTimeinterval = 0.3f;
+static CGFloat const ZLPopBubbleEffectViewAlpha = 0.65f;
+static CGFloat const ZLPopBubbleViewW = 130.f;
+static CGFloat const ZLPopBubbleViewH = 220.f;
+static CGFloat const ZLPopBubbleViewMargin = 10.f;
+static CGFloat const ZLPopBubbleViewAnimTimeinterval = 0.3f;
 
 
 @interface ZLPopBubbleController ()

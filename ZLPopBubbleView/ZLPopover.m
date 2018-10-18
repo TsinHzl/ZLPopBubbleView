@@ -9,9 +9,9 @@
 #import "ZLPopover.h"
 #import "UIView+ZLExtension.h"
 
-static CGFloat ZLPopBubbleViewRectangleY = 10.f;
-static CGFloat ZLPopBubbleViewArcW = 6.f;
-static CGFloat ZLPopBubbleViewArcRadius = 6.f;
+static CGFloat const ZLPopBubbleViewRectangleY = 10.f;
+static CGFloat const ZLPopBubbleViewArcW = 6.f;
+static CGFloat const ZLPopBubbleViewArcRadius = 6.f;
 
 
 @implementation ZLPopover
